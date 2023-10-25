@@ -49,9 +49,13 @@ ifconfig enp1s0f1v1 192.168.201.5 up
 /opt/mellanox/iproute2/sbin/mlxdevm port function set pci/0000:03:00.1/294944 state inactive
 /opt/mellanox/iproute2/sbin/mlxdevm port show
 /opt/mellanox/iproute2/sbin/mlxdevm port del pci/0000:03:00.1/294944
-```
-<img width="353" alt="1698244930949" src="https://github.com/CHRIS123540/TC-htb-dpu/assets/64949823/b367a45e-f21c-473d-aed4-386c1a8cc108">
 
+cd FINAL_l2fwd
+./A201
+```
+运行仪表盘如下图所示
+![image](https://github.com/CHRIS123540/TC-htb-dpu/assets/64949823/b367a45e-f21c-473d-aed4-386c1a8cc108)
+利用iperf对3个class进行测试
 ![image](https://github.com/CHRIS123540/TC-htb-dpu/assets/64949823/1fbec7b6-5bf8-4ad0-a40e-df1763c1936b)
 
 
