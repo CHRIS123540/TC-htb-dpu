@@ -43,7 +43,7 @@ ifconfig enp1s0f1np1 192.168.201.1 up
 ifconfig enp1s0f1v0 192.168.201.3 up
 ifconfig enp1s0f1v1 192.168.201.5 up
 ```
-
+**DPU部分：**
 ```bash
 # 删除DPU上所有的sf，此处设备号需要手动查询删除，以下是我环境中的例子。
 /opt/mellanox/iproute2/sbin/mlxdevm port function set pci/0000:03:00.1/294944 state inactive
