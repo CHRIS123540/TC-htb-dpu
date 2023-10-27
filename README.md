@@ -54,14 +54,74 @@ cd FINAL_l2fwd
 ./A201
 ```
 
+# TC-HTB-DPU
+
+**Author**: Lingxiang Hu
+
+**GitHub ID**: CHRIS123540
+
+**Doca Version**: 1.4.0079
+
+**Preliminary Work**: [Link to the article](https://juejin.cn/post/7158639124994326541)
+
+## Introduction
+
+Linux Traffic Control (TC) is a powerful tool for controlling and managing network traffic within the Linux kernel. It offers an extensive set of features for classifying, queuing, and scheduling network packets, enabling network administrators to maintain quality of service (QoS). Key components of TC include classifiers, actions, policies, and qdiscs (queuing disciplines).
+
+In today's network landscape, both data volumes and speeds are ever-increasing, particularly in data centers and large-scale network infrastructures. In these scenarios, Linux TC functions play a pivotal role in ensuring network quality and performance. However, with the surge in data traffic, traditional TC may face challenges in handling massive network flows:
+
+- **Processing Capacity:** With the growth in network traffic, traditional TC may encounter bottlenecks, especially during peak periods.
+- **CPU Resource Consumption:** TC computations are typically performed by the host's CPU. Processing vast amounts of network traffic can consume significant CPU resources, impacting the performance of other applications.
+- **Latency and Throughput:** Under high-load conditions, traditional TC might not guarantee low latency and high throughput, particularly for applications with high real-time requirements.
+
+With the advent of the Data Processing Unit (DPU), this paradigm is shifting. A DPU typically incorporates ARM cores and network hardware accelerators, as well as programmable network switch chips (like eSwitch). By leveraging these hardware and software assets, we can offload TC functionalities onto the DPU, achieving the following benefits:
+
+- **Enhanced Processing Capacity:** Using the DPU's hardware acceleration and efficient ARM cores, TC processing capacity can be substantially improved to handle massive network flows.
+- **Reduced CPU Load on the Host:** By offloading TC functionalities to the DPU, the load on the host's CPU can be minimized, freeing up CPU resources for other applications.
+- **Optimized Latency and Throughput:** With the DPU's hardware acceleration, low latency and high throughput traffic control can be realized, enhancing network QoS.
+- **Flexible Deployment and Scalability:** Leveraging ARM computational capabilities, scheduling algorithms can be implemented as needed.
+
+This application is based on a multi-branch tree structure, employing a weighted round-robin algorithm. By offloading TC htb onto the DPU, not only can we enhance network performance and QoS but also offer a scalable and flexible solution for the anticipated growth in network traffic and deployment of new applications. This project offers a compact framework.
+
+For demonstration purposes, the application assumes three classes on the host, sharing a 65Gbps link bandwidth. These three classes need to satisfy different priorities, bandwidth limits, and hierarchical structures. To showcase the capabilities, this application presents a fair queue of these three classes. Test results are illustrated in the included graph.
+
+## Usage
+
+Here's how to use the application (tested only with doca 1.4), with the specific run code detailed below:
+
+### Host Part:
+
+```bash
+# Create 2 VFs to simulate the virtualized business the server carries
+echo 0 > /sys/class/net/enp1s0f1np1/device/sriov_numvfs
+echo 4 > /sys/class/net/enp1s0f1np1/device/sriov_numvfs
+ifconfig enp1s0f1np1 192.168.201.1 up
+ifconfig enp1s0f1v0 192.168.201.3 up
+ifconfig enp1s0f1v1 192.168.201.5 up
+```
+### DPU Part:
+
+```bash
+# Delete all sfs on the DPU, the device number here needs to be manually queried and deleted, the following is an example in my environment.
+/opt/mellanox/iproute2/sbin/mlxdevm port function set pci/0000:03:00.1/294944 state inactive
+/opt/mellanox/iproute2/sbin/mlxdevm port show
+/opt/mellanox/iproute2/sbin/mlxdevm port del pci/0000:03:00.1/294944
+
+cd FINAL_l2fwd
+./A201
+```
+
+
 
 运行仪表盘如下图所示
+The operation of the dashboard is as shown in the following image.
 
 ![image](https://github.com/CHRIS123540/TC-htb-dpu/assets/64949823/b367a45e-f21c-473d-aed4-386c1a8cc108)
 
 
 
 利用iperf对3个class进行测试，画图所示，可以看出对流量控制效果较好
+By testing the three classes using iperf, as illustrated in the graph, it can be observed that the traffic control effect is quite satisfactory.
 
 ![image](https://github.com/CHRIS123540/TC-htb-dpu/assets/64949823/1fbec7b6-5bf8-4ad0-a40e-df1763c1936b)
 
